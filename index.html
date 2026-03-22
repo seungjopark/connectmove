@@ -360,11 +360,13 @@
 
       <!-- ─── HERO VISUAL: Arch + Color Orb ─── -->
       <div class="reveal d1 float-anim" style="margin-bottom: 44px;">
-        <div class="hero-visual">
-          <div class="arch-glow"></div>
-          <div class="orb-glow orb-rotate"></div>
-          <div class="arch"></div>
-          <div class="color-orb"></div>
+        <div class="hero-visual" style="transform: translateX(12px);">
+          <div id="hero-arch-glow" class="arch-glow"></div>
+          <div id="hero-arch" class="arch"></div>
+          <div id="orb-parallax" style="position: absolute; inset: 0; z-index: 3; will-change: transform;">
+            <div class="orb-glow orb-rotate"></div>
+            <div class="color-orb"></div>
+          </div>
         </div>
       </div>
 
@@ -481,6 +483,29 @@
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 2500);
   }
+
+  // ── Orb & Arch parallax on scroll ──
+  (function() {
+    const orbWrap   = document.getElementById('orb-parallax');
+    const arch      = document.getElementById('hero-arch');
+    const archGlow  = document.getElementById('hero-arch-glow');
+    const hero      = document.querySelector('section');
+
+    function update() {
+      const progress = Math.min(Math.max(window.scrollY / (hero.offsetHeight * 0.6), 0), 1);
+
+      // 원: 화면 밖으로 이동
+      const orbOffset = progress * window.innerWidth;
+      orbWrap.style.transform = 'translateX(' + orbOffset + 'px)';
+
+      // 아치: 50% 확대
+      const scale = 1 + progress * 0.5;
+      arch.style.transform     = 'translate(-62%, -50%) scale(' + scale + ')';
+      archGlow.style.transform = 'translate(-62%, -50%) scale(' + scale + ')';
+    }
+
+    window.addEventListener('scroll', update, { passive: true });
+  })();
 
   async function handleShare() {
     const url = window.location.href;
