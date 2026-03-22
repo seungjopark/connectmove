@@ -285,6 +285,36 @@
     .float-anim { animation: floatY 6s ease-in-out infinite; }
     .pulse-anim { animation: pulseOpacity 3s ease-in-out infinite; }
     .orb-rotate { animation: rotateSlow 20s linear infinite; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%) translateY(12px);
+      background: rgba(30,25,18,0.95);
+      border: 1px solid rgba(239,130,0,0.3);
+      color: #ffffff;
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 12px 22px;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s cubic-bezier(0.16,1,0.3,1),
+                  transform 0.3s cubic-bezier(0.16,1,0.3,1);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   </style>
 </head>
 
@@ -326,7 +356,7 @@
 
       <!-- Event title -->
       <div class="reveal d2" style="text-align: center; margin-bottom: 28px;">
-        <p style="font-size: 0.9375rem; color: rgba(255,255,255,0.4); font-weight: 500; letter-spacing: 0.04em;">예배당 이전 감사예배</p>
+        <p style="font-size: 1rem; color: rgba(255,255,255,0.8); font-weight: 500; letter-spacing: 0.04em;">예배당 이전 감사예배</p>
       </div>
 
       <!-- Divider -->
@@ -336,7 +366,7 @@
 
       <!-- Vision message -->
       <div class="reveal d3" style="text-align: center; margin-bottom: 40px; padding: 0 8px;">
-        <p style="font-size: 1rem; line-height: 2.1; color: rgba(255,255,255,0.5); word-break: keep-all;">
+        <p style="font-size: 1rem; line-height: 2.1; color: rgba(255,255,255,0.8); word-break: keep-all;">
           주님 안에서 하나 되어<br>
           세상과 하나님을 연결하는<br>
           <span style="color: #ef8200; font-weight: 600;">잇:다교회</span>의 새 보금자리로<br>
@@ -352,9 +382,8 @@
             <iconify-icon icon="solar:calendar-bold" width="20" style="color: #ef8200;"></iconify-icon>
           </div>
           <div>
-            <p style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(239,130,0,0.65); font-weight: 600; margin-bottom: 4px;">일시</p>
-            <p style="font-size: 1.0625rem; font-weight: 700; color: #ffffff; line-height: 1.3;">2026년 4월 18일 (토)</p>
-            <p style="font-size: 0.9rem; color: rgba(255,255,255,0.45); margin-top: 2px; font-weight: 500;">오후 2시</p>
+            <p style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(239,130,0,0.65); font-weight: 600; margin-bottom: 4px;">일시</p>
+            <p style="font-size: 1.0625rem; font-weight: 700; color: #ffffff; line-height: 1.3;">2026년 4월 18일 (토) 오후 2시</p>
           </div>
         </div>
       </div>
@@ -366,19 +395,22 @@
             <iconify-icon icon="solar:map-point-bold" width="20" style="color: #ef8200;"></iconify-icon>
           </div>
           <div>
-            <p style="font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(239,130,0,0.65); font-weight: 600; margin-bottom: 4px;">장소</p>
-            <p style="font-size: 0.9375rem; font-weight: 700; color: #ffffff; line-height: 1.6; word-break: keep-all;">안산시 단원구 고잔동<br>한양대학로 210, 4층</p>
-            <p style="font-size: 0.8125rem; color: rgba(239,130,0,0.6); margin-top: 3px; font-weight: 500;">잇:다교회 (문화공간 잇:다)</p>
+            <p style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(239,130,0,0.65); font-weight: 600; margin-bottom: 4px;">장소</p>
+            <p style="font-size: 1rem; font-weight: 700; color: #ffffff; line-height: 1.6; word-break: keep-all;">안산시 단원구 고잔동<br>한양대학로 210, 4층 잇:다교회</p>
           </div>
         </div>
       </div>
 
       <!-- Map CTA -->
-      <div class="reveal d6">
+      <div class="reveal d6" style="display: flex; flex-direction: column; gap: 10px;">
         <a href="https://naver.me/F05EQO1n" class="btn-orange" style="width: 100%;" target="_blank" rel="noopener">
           <iconify-icon icon="solar:map-bold" width="17"></iconify-icon>
           네이버 지도로 보기
         </a>
+        <button onclick="handleShare()" class="btn-outline" style="width: 100%; cursor: pointer; font-family: inherit;">
+          <iconify-icon icon="solar:share-circle-linear" width="17"></iconify-icon>
+          <span id="share-label">공유하기</span>
+        </button>
       </div>
 
     </div>
@@ -410,12 +442,39 @@
 
 </div><!-- /wrapper -->
 
+<!-- Toast -->
+<div id="toast">
+  <iconify-icon icon="solar:check-circle-bold" width="16" style="color: #ef8200;"></iconify-icon>
+  URL이 복사되었습니다
+</div>
+
 <script>
   const io = new IntersectionObserver(
     entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); }),
     { threshold: 0.1, rootMargin: '0px 0px -30px 0px' }
   );
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  function showToast() {
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+
+  async function handleShare() {
+    const url = window.location.href;
+    const data = {
+      title: '잇:다교회 예배당 이전 감사예배',
+      text: '2026년 4월 18일 (토) 오후 2시\n안산시 단원구 고잔동 한양대학로 210, 4층 잇:다교회',
+      url,
+    };
+    if (navigator.share) {
+      try { await navigator.share(data); } catch (e) {}
+    } else {
+      try { await navigator.clipboard.writeText(url); } catch (e) {}
+      showToast();
+    }
+  }
 </script>
 </body>
 </html>
