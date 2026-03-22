@@ -1,0 +1,126 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+
+    <!-- Arch glow filter -->
+    <filter id="arch-glow" x="-250%" y="-250%" width="600%" height="600%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="50" result="b1"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="22" result="b2"/>
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6"  result="b3"/>
+      <feMerge>
+        <feMergeNode in="b1"/>
+        <feMergeNode in="b2"/>
+        <feMergeNode in="b3"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Soft ambient blur -->
+    <filter id="ambient" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="55"/>
+    </filter>
+
+    <!-- Orb soft blur -->
+    <filter id="orb-blur" x="-15%" y="-15%" width="130%" height="130%">
+      <feGaussianBlur stdDeviation="7"/>
+    </filter>
+
+    <!-- Clip circle for orb -->
+    <clipPath id="orb-clip">
+      <circle cx="672" cy="222" r="118"/>
+    </clipPath>
+
+    <!-- Orb radial gradients (objectBoundingBox = relative to clip rect 554,104 – 790,340) -->
+    <radialGradient id="g1" cx="30%" cy="68%" r="55%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#ef8200"/>
+      <stop offset="100%" stop-color="#ef8200" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="72%" cy="72%" r="45%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g3" cx="18%" cy="30%" r="50%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#06b6d4"/>
+      <stop offset="100%" stop-color="#06b6d4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g4" cx="65%" cy="22%" r="50%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#7c3aed"/>
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g5" cx="85%" cy="45%" r="45%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="g6" cx="50%" cy="50%" r="70%" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#a855f7" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Grain noise filter -->
+    <filter id="grain" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix type="saturate" values="0" in="noise" result="gray"/>
+      <feBlend in="SourceGraphic" in2="gray" mode="soft-light" result="blend"/>
+      <feComposite in="blend" in2="SourceGraphic" operator="in"/>
+    </filter>
+
+  </defs>
+
+  <!-- ── Background ── -->
+  <rect width="1200" height="630" fill="#0a0a0a"/>
+
+  <!-- ── Ambient glows ── -->
+  <!-- White center-left (behind arch) -->
+  <ellipse cx="528" cy="210" rx="240" ry="230" fill="white" opacity="0.07" filter="url(#ambient)"/>
+  <!-- Purple top-right (behind orb) -->
+  <ellipse cx="720" cy="150" rx="200" ry="170" fill="#7c3aed" opacity="0.13" filter="url(#ambient)"/>
+  <!-- Orange warm bottom -->
+  <ellipse cx="600" cy="620" rx="420" ry="200" fill="#ef8200" opacity="0.09" filter="url(#ambient)"/>
+
+  <!-- ── Arch glow (soft white blob) ── -->
+  <path d="M 438,330 L 438,158 A 90,90 0 0,1 618,158 L 618,330 Z"
+        fill="white" opacity="0.22" filter="url(#ambient)"/>
+
+  <!-- ── Arch shape with glow ── -->
+  <path d="M 438,330 L 438,158 A 90,90 0 0,1 618,158 L 618,330 Z"
+        fill="white" filter="url(#arch-glow)"/>
+
+  <!-- ── Colorful orb ── -->
+  <g clip-path="url(#orb-clip)" filter="url(#orb-blur)">
+    <!-- Base dark -->
+    <rect x="554" y="104" width="236" height="236" fill="#1a0820"/>
+    <!-- Color layers -->
+    <rect x="554" y="104" width="236" height="236" fill="url(#g1)"/>
+    <rect x="554" y="104" width="236" height="236" fill="url(#g2)"/>
+    <rect x="554" y="104" width="236" height="236" fill="url(#g3)"/>
+    <rect x="554" y="104" width="236" height="236" fill="url(#g4)"/>
+    <rect x="554" y="104" width="236" height="236" fill="url(#g5)"/>
+    <rect x="554" y="104" width="236" height="236" fill="url(#g6)"/>
+  </g>
+
+  <!-- ── Grain overlay ── -->
+  <rect width="1200" height="630" fill="white" opacity="0.04" filter="url(#grain)"/>
+
+  <!-- ── Text: Church name ── -->
+  <text
+    x="600" y="432"
+    font-family="'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif"
+    font-size="86" font-weight="900" fill="white" text-anchor="middle"
+    letter-spacing="-3">잇:다교회</text>
+
+  <!-- ── Text: Event subtitle ── -->
+  <text
+    x="600" y="488"
+    font-family="'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif"
+    font-size="30" font-weight="500" fill="rgba(255,255,255,0.65)" text-anchor="middle"
+    letter-spacing="1">예배당 이전 감사예배</text>
+
+  <!-- ── Divider line ── -->
+  <line x1="490" y1="512" x2="710" y2="512" stroke="rgba(239,130,0,0.3)" stroke-width="1"/>
+
+  <!-- ── Text: Date (orange) ── -->
+  <text
+    x="600" y="556"
+    font-family="'Apple SD Gothic Neo', 'Malgun Gothic', 'Noto Sans KR', sans-serif"
+    font-size="34" font-weight="700" fill="#ef8200" text-anchor="middle">2026년 4월 18일 (토) 오후 2시</text>
+
+</svg>
