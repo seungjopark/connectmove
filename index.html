@@ -307,6 +307,22 @@
     .pulse-anim { animation: pulseOpacity 3s ease-in-out infinite; }
     .orb-rotate { animation: rotateSlow 20s linear infinite; }
 
+    /* ── Fixed hero visual ── */
+    #hero-visual-fixed {
+      animation: fadeInHero 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+    }
+    @keyframes fadeInHero {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    #hero-arch, #hero-arch-glow {
+      will-change: transform, opacity;
+    }
+    .color-orb {
+      will-change: transform;
+      transform: translateY(-44%) translateZ(0);
+    }
+
     /* ── Toast ── */
     #toast {
       position: fixed;
@@ -340,6 +356,21 @@
 </head>
 
 <body>
+
+<!-- ── Fixed hero visual (position: fixed, scroll 시 위치 고정) ── -->
+<div id="hero-visual-fixed" style="position: fixed; top: 60px; left: 50%; transform: translateX(calc(-50% + 12px)); z-index: 2; pointer-events: none;">
+  <div class="float-anim">
+    <div class="hero-visual" style="margin: 0;">
+      <div id="hero-arch-glow" class="arch-glow"></div>
+      <div id="hero-arch" class="arch"></div>
+      <div id="orb-parallax" style="position: absolute; inset: 0; z-index: 3; will-change: transform;">
+        <div class="orb-glow orb-rotate"></div>
+        <div class="color-orb"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div style="max-width: 430px; margin: 0 auto; position: relative;">
 
   <!-- ══════════════════════════════════
@@ -358,17 +389,8 @@
 
     <div style="position: relative; z-index: 1;">
 
-      <!-- ─── HERO VISUAL: Arch + Color Orb ─── -->
-      <div class="reveal d1 float-anim" style="margin-bottom: 44px;">
-        <div class="hero-visual" style="transform: translateX(12px);">
-          <div id="hero-arch-glow" class="arch-glow"></div>
-          <div id="hero-arch" class="arch"></div>
-          <div id="orb-parallax" style="position: absolute; inset: 0; z-index: 3; will-change: transform;">
-            <div class="orb-glow orb-rotate"></div>
-            <div class="color-orb"></div>
-          </div>
-        </div>
-      </div>
+      <!-- ─── 고정 비주얼 공간 확보용 스페이서 ─── -->
+      <div style="height: 264px; flex-shrink: 0;"></div>
 
       <!-- Church name -->
       <div class="reveal d2" style="text-align: center; margin-bottom: 8px;">
@@ -484,24 +506,31 @@
     setTimeout(() => toast.classList.remove('show'), 2500);
   }
 
-  // ── Orb & Arch parallax on scroll ──
+  // ── Orb & Arch scroll animation (fixed visual) ──
   (function() {
-    const orbWrap   = document.getElementById('orb-parallax');
-    const arch      = document.getElementById('hero-arch');
-    const archGlow  = document.getElementById('hero-arch-glow');
-    const hero      = document.querySelector('section');
+    const visualFixed = document.getElementById('hero-visual-fixed');
+    const orbWrap     = document.getElementById('orb-parallax');
+    const arch        = document.getElementById('hero-arch');
+    const archGlow    = document.getElementById('hero-arch-glow');
+    const hero        = document.querySelector('section');
 
     function update() {
       const progress = Math.min(Math.max(window.scrollY / (hero.offsetHeight * 0.6), 0), 1);
 
-      // 원: 화면 밖으로 이동
+      // 원: 화면 밖 오른쪽으로 이동
       const orbOffset = progress * window.innerWidth;
       orbWrap.style.transform = 'translateX(' + orbOffset + 'px)';
 
-      // 아치: 50% 확대
-      const scale = 1 + progress * 0.5;
+      // 아치: 50% 확대 + opacity 0으로 페이드아웃
+      const scale   = 1 + progress * 0.5;
+      const opacity = 1 - progress;
       arch.style.transform     = 'translate(-62%, -50%) scale(' + scale + ')';
+      arch.style.opacity       = opacity;
       archGlow.style.transform = 'translate(-62%, -50%) scale(' + scale + ')';
+      archGlow.style.opacity   = opacity;
+
+      // 완전히 사라지면 fixed 요소 숨김
+      visualFixed.style.visibility = progress >= 1 ? 'hidden' : 'visible';
     }
 
     window.addEventListener('scroll', update, { passive: true });
