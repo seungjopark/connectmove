@@ -506,34 +506,51 @@
     setTimeout(() => toast.classList.remove('show'), 2500);
   }
 
-  // ── Orb & Arch scroll animation (fixed visual) ──
+  // ── Orb & Arch scroll animation (fixed visual, lerp smoothing) ──
   (function() {
     const visualFixed = document.getElementById('hero-visual-fixed');
     const orbWrap     = document.getElementById('orb-parallax');
     const arch        = document.getElementById('hero-arch');
     const archGlow    = document.getElementById('hero-arch-glow');
-    const hero        = document.querySelector('section');
 
-    function update() {
-      const progress = Math.min(Math.max(window.scrollY / (hero.offsetHeight * 0.6), 0), 1);
+    let current = 0;
+    let target  = 0;
+    let rafId   = null;
 
-      // 원: 화면 밖 오른쪽으로 이동
-      const orbOffset = progress * window.innerWidth;
-      orbWrap.style.transform = 'translateX(' + orbOffset + 'px)';
+    function lerp(a, b, t) { return a + (b - a) * t; }
 
-      // 아치: 50% 확대 + opacity 0으로 페이드아웃
-      const scale   = 1 + progress * 0.5;
-      const opacity = 1 - progress;
+    function applyAnimations(p) {
+      // 원: 화면 밖 오른쪽으로
+      orbWrap.style.transform = 'translateX(' + (p * window.innerWidth) + 'px)';
+
+      // 아치: 50% 확대 + opacity 페이드 (100px 스크롤에서 완전히 사라짐)
+      const scale   = 1 + p * 0.5;
+      const opacity = 1 - p;
       arch.style.transform     = 'translate(-62%, -50%) scale(' + scale + ')';
       arch.style.opacity       = opacity;
       archGlow.style.transform = 'translate(-62%, -50%) scale(' + scale + ')';
       archGlow.style.opacity   = opacity;
 
-      // 완전히 사라지면 fixed 요소 숨김
-      visualFixed.style.visibility = progress >= 1 ? 'hidden' : 'visible';
+      visualFixed.style.visibility = p >= 1 ? 'hidden' : 'visible';
     }
 
-    window.addEventListener('scroll', update, { passive: true });
+    function tick() {
+      current = lerp(current, target, 0.1);
+      applyAnimations(current);
+      if (Math.abs(current - target) > 0.0005) {
+        rafId = requestAnimationFrame(tick);
+      } else {
+        current = target;
+        applyAnimations(current);
+        rafId = null;
+      }
+    }
+
+    window.addEventListener('scroll', function() {
+      // 100px 스크롤 시 progress = 1 (완전히 사라짐)
+      target = Math.min(Math.max(window.scrollY / 100, 0), 1);
+      if (!rafId) rafId = requestAnimationFrame(tick);
+    }, { passive: true });
   })();
 
   async function handleShare() {
