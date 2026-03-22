@@ -548,7 +548,7 @@
 
     window.addEventListener('scroll', function() {
       // 100px 스크롤 시 progress = 1 (완전히 사라짐)
-      target = Math.min(Math.max(window.scrollY / 100, 0), 1);
+      target = Math.min(Math.max(window.scrollY / 150, 0), 1);
       if (!rafId) rafId = requestAnimationFrame(tick);
     }, { passive: true });
   })();
